@@ -72,3 +72,27 @@ function getIntersection(A, B, C, D) {
 
   return null;
 }
+
+/**
+ *  Method help to find if there is an intersection between two polygon by check if there intersection
+ *  between sides segments of the two polygon
+ * @param {array} poly1 - array of corner coordinates
+ * @param {array} poly2 - array of corner coordinates
+ * @returns {boolean} - true if there is intersection between two polygon, false otherwise
+ */
+function polysIntersect(poly1, poly2) {
+  for (let i = 0; i < poly1.length; i++) {
+    for (let j = 0; j < poly2.length; j++) {
+      const touch = getIntersection(
+        poly1[i],
+        poly1[(i + 1) % poly1.length],
+        poly2[j],
+        poly2[(j + 1) % poly2.length]
+      );
+      if (touch) {
+        return true;
+      }
+    }
+  }
+  return false;
+}

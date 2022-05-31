@@ -28,8 +28,28 @@ class Car {
    * used to update the position of car
    */
   update(roadBorders) {
-    this.#move();
+    //if the car damaged stop every thing !
+    if (!this.damaged) {
+      this.#move();
+      //for car shape
+      this.polygon = this.#createPolygon();
+      //to detect damaged
+      this.damaged = this.#assessDamage(roadBorders);
+    }
     this.sensors.update(roadBorders);
+  }
+  /**
+   * Detect any crash between the car(polygon) and the road borders
+   * @param {array} roadBorders
+   * @returns {boolean} - true if theres a damage, false otherwise
+   */
+  #assessDamage(roadBorders) {
+    for (let i = 0; i < roadBorders.length; i++) {
+      if (polysIntersect(this.polygon, roadBorders[i])) {
+        return true;
+      }
+    }
+    return false;
   }
   #move() {
     if (this.controls.forward) {
@@ -84,21 +104,62 @@ class Car {
     this.x -= Math.sin(this.angle) * this.speed; // we put sine here because in the unit circle the sine present in x-axis
     this.y -= Math.cos(this.angle) * this.speed; // we put cosine here because in the unit circle the cosine present in y-axis
   }
+
+  /**
+   * @returns {array} - the coordinates of the coroners of the polygon (car)
+   */
+  #createPolygon() {
+    //The corners of the polygon
+    const points = [];
+    //hypot -- used to find the sqrt of the sum of arg^2 ==> sqrt(arg1^2 + arg3^2 + arg3^2 + .....);
+    //we divide by two because we want radius not diameter
+    const rad = Math.hypot(this.width, this.height) / 2;
+
+    //atan2 -- used to find the angle between the x-axis(width) and y-axis(height)
+    const alpha = Math.atan2(this.width, this.height);
+
+    //top right point
+    points.push({
+      x: this.x - Math.sin(this.angle - alpha) * rad,
+      y: this.y - Math.cos(this.angle - alpha) * rad,
+    });
+
+    //top left point
+    points.push({
+      x: this.x - Math.sin(this.angle + alpha) * rad,
+      y: this.y - Math.cos(this.angle + alpha) * rad,
+    });
+
+    //bottom left point
+    points.push({
+      x: this.x - Math.sin(Math.PI + this.angle - alpha) * rad,
+      y: this.y - Math.cos(Math.PI + this.angle - alpha) * rad,
+    });
+
+    //bottom right point
+    points.push({
+      x: this.x - Math.sin(Math.PI + this.angle + alpha) * rad,
+      y: this.y - Math.cos(Math.PI + this.angle + alpha) * rad,
+    });
+
+    return points;
+  }
+
   draw(canvasCtx) {
-    //we can make the rotate here by canvas method
-
-    //to store the current frame of car
-    canvasCtx.save();
-
-    canvasCtx.translate(this.x, this.y);
-    canvasCtx.rotate(-this.angle);
-
+    if (this.damaged) {
+      canvasCtx.fillStyle = "gray";
+    } else {
+      canvasCtx.fillStyle = "black";
+    }
     canvasCtx.beginPath();
-    canvasCtx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
-    canvasCtx.fill();
+    // it is like move the pencel to begin draw
+    canvasCtx.moveTo(this.polygon[0].x, this.polygon[0].y);
 
-    // to restore the current frame and make animation good
-    canvasCtx.restore();
+    //draw lines to all other points of polygon
+    for (let i = 1; i < this.polygon.length; i++) {
+      canvasCtx.lineTo(this.polygon[i].x, this.polygon[i].y);
+    }
+    canvasCtx.fill();
 
     //draw sensors of the car
     this.sensors.draw(canvasCtx);
