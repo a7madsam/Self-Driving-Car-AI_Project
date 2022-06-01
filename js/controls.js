@@ -1,13 +1,20 @@
 class Controls {
-  constructor() {
+  constructor(controlType) {
     // 4 - direction
     this.forward = false;
     this.reverse = false;
     this.right = false;
     this.left = false;
 
-    //Private method to listen
-    this.#addKeyboardListeners();
+    //different control for different type of car - main or traffic
+    switch (controlType) {
+      case "KEYS":
+        this.#addKeyboardListeners();
+        break;
+      case "DUMMY":
+        this.forward = true;
+        break;
+    }
   }
 
   #addKeyboardListeners() {

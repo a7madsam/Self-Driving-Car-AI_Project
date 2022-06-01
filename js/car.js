@@ -1,5 +1,6 @@
 class Car {
-  constructor(x, y, width, height) {
+  // controlType = "KEYS" OR "DUMMY" ---- KEYS THE MAIN ONE, DUMMY THE TRAFFIC
+  constructor(x, y, width, height, controlType, maxSpeed = 3) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -10,42 +11,55 @@ class Car {
     this.speed = 0;
     this.acceleration = 0.2;
 
-    this.maxSpeed = 3;
+    this.maxSpeed = maxSpeed;
     this.friction = 0.05;
 
     // for rotate the car left or right
     this.angle = 0;
 
     //for sensors
-    this.sensors = new Sensors(this);
+    if (controlType === "KEYS") {
+      this.sensors = new Sensors(this);
+    }
 
-    //to control car movement
-    this.controls = new Controls();
+    //to control car movement -- we pass {controlType} to the control class to specify
+    //                           which car is the main car(in other word which car is the one we want to control it with keys)
+    this.controls = new Controls(controlType);
   }
 
   /**
    * update()
    * used to update the position of car
    */
-  update(roadBorders) {
+  update(roadBorders, traffic) {
     //if the car damaged stop every thing !
     if (!this.damaged) {
       this.#move();
       //for car shape
       this.polygon = this.#createPolygon();
-      //to detect damaged
-      this.damaged = this.#assessDamage(roadBorders);
+      //to detect damaged from the border of the road and other traffic
+      this.damaged = this.#assessDamage(roadBorders, traffic);
     }
-    this.sensors.update(roadBorders);
+    if (this.sensors) {
+      this.sensors.update(roadBorders, traffic);
+    }
   }
   /**
-   * Detect any crash between the car(polygon) and the road borders
+   * Detect any crash between the main car(polygon) with the road borders and the traffic car
    * @param {array} roadBorders
+   * @param {array} traffic - punch of cars represent traffic
    * @returns {boolean} - true if theres a damage, false otherwise
    */
-  #assessDamage(roadBorders) {
+  #assessDamage(roadBorders, traffic) {
+    // to detect damage when crash with road boarders
     for (let i = 0; i < roadBorders.length; i++) {
       if (polysIntersect(this.polygon, roadBorders[i])) {
+        return true;
+      }
+    }
+    // to detect damage when crash with traffic
+    for (let i = 0; i < traffic.length; i++) {
+      if (polysIntersect(this.polygon, traffic[i].polygon)) {
         return true;
       }
     }
@@ -145,11 +159,11 @@ class Car {
     return points;
   }
 
-  draw(canvasCtx) {
+  draw(canvasCtx, color) {
     if (this.damaged) {
       canvasCtx.fillStyle = "gray";
     } else {
-      canvasCtx.fillStyle = "black";
+      canvasCtx.fillStyle = color;
     }
     canvasCtx.beginPath();
     // it is like move the pencel to begin draw
@@ -162,6 +176,8 @@ class Car {
     canvasCtx.fill();
 
     //draw sensors of the car
-    this.sensors.draw(canvasCtx);
+    if (this.sensors) {
+      this.sensors.draw(canvasCtx);
+    }
   }
 }

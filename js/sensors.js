@@ -8,16 +8,17 @@ class Sensors {
     this.rays = [];
     this.readings = []; //this responsible to tell/store for each ray if it close/near to any border or not
   }
-  update(roadBorders) {
+  update(roadBorders, traffic) {
     this.#raysConfig();
     this.readings = [];
     for (let i = 0; i < this.rayCount; i++) {
-      this.readings.push(this.#getReading(this.rays[i], roadBorders));
+      this.readings.push(this.#getReading(this.rays[i], roadBorders, traffic));
     }
   }
-  #getReading(ray, roadBorders) {
+  #getReading(ray, roadBorders, traffic) {
     let touches = []; //to store all intersection point of the ray and other component in the track
     for (let i = 0; i < roadBorders.length; i++) {
+      //ray[0] - start point of ray, ray[1], end point on the ray
       const touch = getIntersection(
         ray[0],
         ray[1],
@@ -27,6 +28,21 @@ class Sensors {
       if (touch) {
         // if we find a touch then store it
         touches.push(touch);
+      }
+    }
+    //to make sensors detect any traffic
+    for (let i = 0; i < traffic.length; i++) {
+      const poly = traffic[i].polygon;
+      for (let j = 0; j < poly.length; j++) {
+        const value = getIntersection(
+          ray[0],
+          ray[1],
+          poly[j],
+          poly[(j + 1) % poly.length]
+        );
+        if (value) {
+          touches.push(value);
+        }
       }
     }
     if (touches.length === 0) {
