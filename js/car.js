@@ -17,9 +17,13 @@ class Car {
     // for rotate the car left or right
     this.angle = 0;
 
+    this.useBrain = controlType == "AI";
     //for sensors
-    if (controlType === "KEYS") {
+    if (controlType !== "DUMMY") {
       this.sensors = new Sensors(this);
+      //we specified the layers of out neural network
+      //input - rayCounts, hidden - 6-neurons, output - 4-neurons {represent direction}
+      this.brain = new NeuralNetwork([this.sensors.rayCount, 6, 4]);
     }
 
     //to control car movement -- we pass {controlType} to the control class to specify
@@ -42,6 +46,22 @@ class Car {
     }
     if (this.sensors) {
       this.sensors.update(roadBorders, traffic);
+      /**
+       * here we iterate through all readings of sensors,
+       * and if the reading is null {theres no object detected by sensor} then return 0
+       * but if not we return {1 - read.offset} because i want neurons receive high values with near object and low one's with far object
+       */
+      const offsets = this.sensors.readings.map((read) => {
+        return read === null ? 0 : 1 - read.offset;
+      });
+      const output = NeuralNetwork.feedForward(offsets, this.brain);
+      console.log(output);
+      if (this.useBrain) {
+        this.controls.forward = output[0];
+        this.controls.left = output[1];
+        this.controls.right = output[2];
+        this.controls.reverse = output[3];
+      }
     }
   }
   /**

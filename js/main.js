@@ -10,7 +10,7 @@ const canvasCtx = canvas.getContext("2d");
  * const road = new Road(x-axis for the center of the road, width of the road);
  */
 const road = new Road(canvas.width / 2, canvas.width * 0.94);
-const car = new Car(road.getLaneCenter(1), 200, 30, 50, "KEYS");
+const car = new Car(road.getLaneCenter(1), 200, 30, 50, "AI");
 
 //simulate traffic
 const traffic = [new Car(road.getLaneCenter(1), 100, 30, 50, "DUMMY", 2)];
