@@ -108,3 +108,11 @@ function getRGBA(value) {
 
   return "rgba(" + R + "," + G + "," + B + "," + alpha + ")";
 }
+/**
+ *
+ * @returns - some random color in HSL(Hue , Saturation, Lightens) format
+ */
+function getRandomColor() {
+  const hue = 290 + Math.random() * 260;
+  return "hsl(" + hue + ", 100%, 60%)";
+}

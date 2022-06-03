@@ -1,6 +1,6 @@
 class Car {
   // controlType = "KEYS" OR "DUMMY" ---- KEYS THE MAIN ONE, DUMMY THE TRAFFIC
-  constructor(x, y, width, height, controlType, maxSpeed = 3) {
+  constructor(x, y, width, height, controlType, maxSpeed = 3, color = "blue") {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -26,6 +26,24 @@ class Car {
       this.brain = new NeuralNetwork([this.sensors.rayCount, 6, 4]);
     }
 
+    //to make car more nicer :*
+    this.img = new Image();
+    this.img.src = "car.png";
+
+    //to colorize our cars
+    this.mask = document.createElement("canvas");
+    this.mask.width = width;
+    this.mask.height = height;
+
+    const maskCtx = this.mask.getContext("2d");
+    this.img.onload = () => {
+      maskCtx.fillStyle = color;
+      maskCtx.rect(0, 0, this.width, this.height);
+      maskCtx.fill();
+
+      maskCtx.globalCompositeOperation = "destination-atop";
+      maskCtx.drawImage(this.img, 0, 0, this.width, this.height);
+    };
     //to control car movement -- we pass {controlType} to the control class to specify
     //                           which car is the main car(in other word which car is the one we want to control it with keys)
     this.controls = new Controls(controlType);
@@ -180,24 +198,53 @@ class Car {
   }
 
   draw(canvasCtx, color, drawSensors = false) {
-    if (this.damaged) {
-      canvasCtx.fillStyle = "gray";
-    } else {
-      canvasCtx.fillStyle = color;
-    }
-    canvasCtx.beginPath();
-    // it is like move the pencel to begin draw
-    canvasCtx.moveTo(this.polygon[0].x, this.polygon[0].y);
+    /**
+     * this commented code below if we want to draw car as polygon
+     */
+    // if (this.damaged) {
+    //   canvasCtx.fillStyle = "gray";
+    // } else {
+    //   canvasCtx.fillStyle = color;
+    // }
+    // canvasCtx.beginPath();
+    // // it is like move the pencel to begin draw
+    // canvasCtx.moveTo(this.polygon[0].x, this.polygon[0].y);
 
-    //draw lines to all other points of polygon
-    for (let i = 1; i < this.polygon.length; i++) {
-      canvasCtx.lineTo(this.polygon[i].x, this.polygon[i].y);
-    }
-    canvasCtx.fill();
+    // //draw lines to all other points of polygon
+    // for (let i = 1; i < this.polygon.length; i++) {
+    //   canvasCtx.lineTo(this.polygon[i].x, this.polygon[i].y);
+    // }
+    // canvasCtx.fill();
 
     //draw sensors of the specific car
     if (this.sensors && drawSensors) {
       this.sensors.draw(canvasCtx);
     }
+
+    /**
+     * this code below if we want to draw a car as an image
+     */
+
+    canvasCtx.save();
+    canvasCtx.translate(this.x, this.y);
+    canvasCtx.rotate(-this.angle);
+    if (!this.damaged) {
+      canvasCtx.drawImage(
+        this.mask,
+        -this.width / 2,
+        -this.height / 2,
+        this.width,
+        this.height
+      );
+      canvasCtx.globalCompositeOperation = "multiply";
+    }
+    canvasCtx.drawImage(
+      this.img,
+      -this.width / 2,
+      -this.height / 2,
+      this.width,
+      this.height
+    );
+    canvasCtx.restore();
   }
 }
