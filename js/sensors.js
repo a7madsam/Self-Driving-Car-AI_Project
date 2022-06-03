@@ -1,9 +1,9 @@
 class Sensors {
   constructor(car) {
     this.car = car;
-    this.rayCount = 3;
-    this.rayLength = 100; // mean the range of each individual ray
-    this.raySpread = Math.PI / 4; // the angle between rays - Math.PI / 4 = 45 degree
+    this.rayCount = 5;
+    this.rayLength = 150; // mean the range of each individual ray
+    this.raySpread = Math.PI / 2; // the angle between rays - Math.PI / 4 = 45 degree
 
     this.rays = [];
     this.readings = []; //this responsible to tell/store for each ray if it close/near to any border or not

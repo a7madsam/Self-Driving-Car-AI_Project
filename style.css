@@ -2,8 +2,45 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#vertical-button {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+button {
+  border: none;
+  border-radius: 5px;
+  padding: 5px 5px 7px 5px;
+  margin: 2px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+button:hover {
+  background-color: aqua;
+}
+.numberOfCar,
+.mutationRatio {
+  background-color: #ddd;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  border-radius: 5px;
+  margin: 2px;
+}
+select {
+  width: 100%;
+}
+.numberOfCar,
+.mutationRatio span {
   text-align: center;
 }
-#main-canvas {
+#car-canvas {
   background-color: lightgray;
+}
+#network-canvas {
+  background-color: black;
 }

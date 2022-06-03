@@ -55,7 +55,7 @@ class Car {
         return read === null ? 0 : 1 - read.offset;
       });
       const output = NeuralNetwork.feedForward(offsets, this.brain);
-      console.log(output);
+      // console.log(output);
       if (this.useBrain) {
         this.controls.forward = output[0];
         this.controls.left = output[1];
@@ -179,7 +179,7 @@ class Car {
     return points;
   }
 
-  draw(canvasCtx, color) {
+  draw(canvasCtx, color, drawSensors = false) {
     if (this.damaged) {
       canvasCtx.fillStyle = "gray";
     } else {
@@ -195,8 +195,8 @@ class Car {
     }
     canvasCtx.fill();
 
-    //draw sensors of the car
-    if (this.sensors) {
+    //draw sensors of the specific car
+    if (this.sensors && drawSensors) {
       this.sensors.draw(canvasCtx);
     }
   }
