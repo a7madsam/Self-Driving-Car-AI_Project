@@ -23,6 +23,7 @@ const road = new Road(carCanvas.width / 2, carCanvas.width * 0.94);
 let N = 100;
 let mutationRatio = 0.1;
 mutationRatioSelect.value = mutationRatio;
+numberOfCarSelect.value = N;
 
 if (localStorage.getItem("numberOfCar")) {
   N = Number(localStorage.getItem("numberOfCar"));
