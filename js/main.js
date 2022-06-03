@@ -23,6 +23,7 @@ const road = new Road(carCanvas.width / 2, carCanvas.width * 0.94);
 let N = 100;
 let mutationRatio = 0.1;
 mutationRatioSelect.value = mutationRatio;
+
 if (localStorage.getItem("numberOfCar")) {
   N = Number(localStorage.getItem("numberOfCar"));
   numberOfCarSelect.value = N;
@@ -31,11 +32,13 @@ if (localStorage.getItem("mutationRatio")) {
   mutationRatio = Number(localStorage.getItem("mutationRatio"));
   mutationRatioSelect.value = mutationRatio;
 }
+
 const cars = generateCar(N);
 let bestCar = cars[0];
 if (localStorage.getItem("bestBrain")) {
   for (let i = 0; i < cars.length; i++) {
     cars[i].brain = JSON.parse(localStorage.getItem("bestBrain"));
+    //the first car (best car) will remain the same but the remains one will mutated
     if (i != 0) {
       NeuralNetwork.mutate(cars[i].brain, mutationRatio);
     }

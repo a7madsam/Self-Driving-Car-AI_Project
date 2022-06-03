@@ -100,7 +100,7 @@ function polysIntersect(poly1, poly2) {
 function getRGBA(value) {
   const alpha = Math.abs(value); // the opacity of the link
   /**
-   * we will use RED for positive values and cyan for negative
+   * we will use blue for positive values and yellow for negative
    */
   const R = value < 0 ? 0 : 255;
   const G = R;

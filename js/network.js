@@ -37,6 +37,14 @@ class NeuralNetwork {
 
     return outputs;
   }
+  /**
+   * this mutate function gone mutate biases and weights for each level in out network depends on ratio so,
+   * if ratio = 1 ==> we will get full mutation (random number)
+   * if ratio = 0 ==> then nothing will happen (there is no mutate)
+   * if ration between -1 and 1 we will get a value far from the original one depends on the ratio
+   * @param {object} network - the network you need to mutate
+   * @param {*} amount - the ratio of mutate
+   */
   static mutate(network, amount = 1) {
     network.levels.forEach((level) => {
       for (let i = 0; i < level.biases.length; i++) {
